@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <title>Cart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.0"></script>
+    <script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+
+</head>
+<body>
+
+    <div class="container-fluid" id="app">
+    <h1 align="center" style="background-color: darkslategrey; color: whitesmoke">[[ apptitle ]]</h1>
+
+    <div class="container-fluid" align="center" style="background-color: cyan; border-radius: 5px" >
+        <h1>Available products:</h1>
+        <p v-if="products.length == 0">No products available</p>
+            <div class="container" v-for='i in products.results' v-if="i !== null">
+               <div calss="container-fluid">{{ csrf_input }}
+                   <button type="button" class="btn btn-light float-right" @click='addToCart(i)'>Add to cart</button>
+                    <h1>Product: [[i.title]]</h1>
+                </div>
+            </div>
+        </div>
+
+        <h1 align="center">CART</h1>
+         <div class="container-fluid" align="center" style="background-color: cyan; border-radius: 5px" >
+        <p v-if="carts.length == 0">Cart is empty</p>
+            <div class="container" v-for='i in carts' v-if="i !== null">
+               <div calss="container-fluid">
+                   <button type="button" class="btn btn-light float-right" @click='removeProduct(i.id)'>Remove from cart</button>
+                    <h1>Product: [[i.title]]</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <script>
+
+var demo = new Vue({
+    delimiters: ["[[","]]"],
+    el: '#app',
+    data: {
+        apptitle: 'Django Vue.JS Job Board',
+        products: [],
+        carts: []
+    },
+    methods: {
+        addToCart: function (product){
+           cart = this.$http.get('http://127.0.0.1:8080/api/carts/'.concat(this.carts.length))
+            cart.$data.products = product;
+           this.$http.post('http://127.0.0.1:8080/api/carts/', cart)
+
+        },
+
+        removeProduct: function (index) {
+            this.$http.delete('http://127.0.0.1:8080/api/products/'.concat(index));
+            delete(this,products.index);
+        }
+    },
+    mounted: function()
+        {
+            this.$http.get('http://127.0.0.1:8080/api/products/').then(function (response) {
+                this.products = response.data;
+            },
+            function (response) {
+                console.log(response);
+            });
+
+            var newCart = {
+                title: 'Shopping cart',
+                products: []
+            }
+            this.$http.post('http://127.0.0.1:8080/api/carts/', newCart);
+
+             this.$http.get('http://127.0.0.1:8080/api/carts/').then(function (response) {
+                this.carts = response.data;
+            },
+            function (response) {
+                console.log(response);
+            });
+            console.log(this.carts);
+        }
+});
+    </script>
+    
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>
